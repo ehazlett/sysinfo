@@ -3,4 +3,7 @@ all: build
 build:
 	@go build -o ./bin/sysinfo .
 
-.PHONY: build
+test:
+	@go test -v ./...
+
+.PHONY: build test
