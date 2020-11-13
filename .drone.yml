@@ -15,6 +15,3 @@ steps:
 - name: build
   commands:
     - make build
-
-node:
-  type: alpine-builder
