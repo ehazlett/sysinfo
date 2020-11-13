@@ -16,7 +16,10 @@ steps:
   commands:
     - make build
 
-- name: build image
+- name: build and push image
+  environment:
+    BUILDKIT:
+      from_secret: buildkit
   commands:
     - vab build -r $IMAGE -p .
   when:
