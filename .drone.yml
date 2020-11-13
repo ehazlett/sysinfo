@@ -15,3 +15,14 @@ steps:
 - name: build
   commands:
     - make build
+
+- name: build image
+  commands:
+    - vab build -r $IMAGE -p .
+  when:
+    event:
+      - promote
+    target:
+      - production
+    status:
+      - success
