@@ -1,7 +1,7 @@
 ---
 kind: pipeline
 type: exec
-name: sysinfo
+name: apps/sysinfo
 
 platform:
   os: linux
@@ -20,12 +20,10 @@ steps:
   environment:
     BUILDKIT:
       from_secret: buildkit
+    IMAGE:
+      from_secret: image
   commands:
     - vab build -r $IMAGE -p .
   when:
-    event:
-      - promote
-    target:
-      - production
     status:
       - success
