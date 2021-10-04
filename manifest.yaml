@@ -1,0 +1,12 @@
+image: r.underland.io/apps/sysinfo:latest
+manifests:
+  -
+    image: r.underland.io/apps/sysinfo:arm64
+    platform:
+      architecture: arm64
+      os: linux
+  -
+    image: r.underland.io/apps/sysinfo:amd64
+    platform:
+      architecture: amd64
+      os: linux
