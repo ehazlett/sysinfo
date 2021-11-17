@@ -26,17 +26,20 @@ type Info struct {
 
 type Server struct {
 	listenAddr string
+	appVersion string
 }
 
-func NewServer(addr string) (*Server, error) {
+func NewServer(addr, appVersion string) (*Server, error) {
 	return &Server{
 		listenAddr: addr,
+		appVersion: appVersion,
 	}, nil
 }
 
 func (s *Server) Run() error {
 	r := mux.NewRouter()
 	r.HandleFunc("/", s.infoHandler)
+	r.HandleFunc("/version", s.versionHandler)
 
 	srv := &http.Server{
 		Handler:      r,
@@ -88,4 +91,8 @@ func (s *Server) infoHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func (s *Server) versionHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte(s.appVersion + "\n"))
 }

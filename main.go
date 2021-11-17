@@ -17,9 +17,15 @@ func main() {
 			Usage:   "listen address",
 			Value:   ":8080",
 		},
+		&cli.StringFlag{
+			Name:    "app-version",
+			EnvVars: []string{"APP_VERSION"},
+			Hidden:  true,
+			Value:   "latest",
+		},
 	}
-	app.Action = func(ctx *cli.Context) error {
-		srv, err := NewServer(ctx.String("listen"))
+	app.Action = func(clix *cli.Context) error {
+		srv, err := NewServer(clix.String("listen"), clix.String("app-version"))
 		if err != nil {
 			return err
 		}
