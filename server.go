@@ -12,6 +12,8 @@ import (
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	tracesdk "go.opentelemetry.io/otel/sdk/trace"
 )
 
 type Info struct {
@@ -25,21 +27,33 @@ type Info struct {
 }
 
 type Server struct {
-	listenAddr string
-	appVersion string
+	listenAddr    string
+	appVersion    string
+	traceProvider *tracesdk.TracerProvider
 }
 
-func NewServer(addr, appVersion string) (*Server, error) {
+func NewServer(addr, appVersion, traceEndpoint string) (*Server, error) {
+	// enable tracing if specified
+	var traceProvider *tracesdk.TracerProvider
+	if traceEndpoint != "" {
+		tp, err := newTraceProvider(traceEndpoint, "sysinfo", appVersion)
+		if err != nil {
+			return nil, err
+		}
+		traceProvider = tp
+	}
+
 	return &Server{
-		listenAddr: addr,
-		appVersion: appVersion,
+		listenAddr:    addr,
+		appVersion:    appVersion,
+		traceProvider: traceProvider,
 	}, nil
 }
 
 func (s *Server) Run() error {
 	r := mux.NewRouter()
-	r.HandleFunc("/", s.infoHandler)
-	r.HandleFunc("/version", s.versionHandler)
+	r.Handle("/", otelhttp.NewHandler(http.HandlerFunc(s.infoHandler), "info"))
+	r.Handle("/version", otelhttp.NewHandler(http.HandlerFunc(s.versionHandler), "version"))
 
 	srv := &http.Server{
 		Handler:      r,

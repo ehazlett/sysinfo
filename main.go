@@ -18,6 +18,12 @@ func main() {
 			Value:   ":8080",
 		},
 		&cli.StringFlag{
+			Name:    "trace-endpoint",
+			Aliases: []string{"t"},
+			Usage:   "send opentelemetry traces to this endpoint",
+			Value:   "",
+		},
+		&cli.StringFlag{
 			Name:    "app-version",
 			EnvVars: []string{"APP_VERSION"},
 			Hidden:  true,
@@ -25,7 +31,7 @@ func main() {
 		},
 	}
 	app.Action = func(clix *cli.Context) error {
-		srv, err := NewServer(clix.String("listen"), clix.String("app-version"))
+		srv, err := NewServer(clix.String("listen"), clix.String("app-version"), clix.String("trace-endpoint"))
 		if err != nil {
 			return err
 		}
