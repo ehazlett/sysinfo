@@ -1,4 +1,4 @@
-FROM golang:1.15-alpine as build
+FROM golang:1.17-alpine as build
 RUN apk add -U make
 COPY . /src/app
 WORKDIR /src/app
